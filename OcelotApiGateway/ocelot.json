@@ -1,0 +1,33 @@
+{
+
+  //"GlobalConfiguration": {
+  //  "BaseUrl": "https://localhost:51734"
+  //},
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/Product",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7144
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/Product",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Product/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7144
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/Product/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    }
+  ]
+
+}
