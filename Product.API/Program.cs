@@ -1,9 +1,14 @@
-using Infrastructure;
+using Application.DependancyInjection;
+using Infrastructure.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.ConfigureApplicationServices();
+builder.Services.ConfigurePersistenceServices(builder.Configuration);
+builder.Services.ConfigurePersistenceServices(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,8 +35,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-//Dependency Injection
-builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy("CorsPolicy",
+        builder => builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+});
 
 var app = builder.Build();
 

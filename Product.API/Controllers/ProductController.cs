@@ -1,5 +1,10 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.DTOs.Product;
+using Application.Features.Products.Requests.Commands;
+using Application.Features.Products.Requests.Queries;
+using Application.Interfaces;
+using Application.Responses;
 using Infrastructure.Persistence;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,58 +15,52 @@ namespace Product.API.Controllers
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
-        private IApplicationDBContext _context;
-        public ProductController(IApplicationDBContext context)
+        //private IApplicationDBContext _context;
+
+        private readonly IMediator _mediator;
+
+        public ProductController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Domain.Entities.Product product)
+        public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] ProductDto product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            return Ok(product.Id);
+            var command = new CreateProductCommand { productDto = product };
+            var repsonse = await _mediator.Send(command);
+            return Ok(repsonse);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<List<ProductDto>>> GetAll()
         {
-            var products = await _context.Products.ToListAsync();
-            if (products == null) return NotFound();
+            var products = await _mediator.Send(new GetProductListRequest() { });
             return Ok(products);
         }
 
+        /*
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<ProductDto>> GetById(int id)
         {
-            var product = await _context.Products.Where(a => a.Id == id).FirstOrDefaultAsync();
-            if (product == null) return NotFound();
-            return Ok(product);
-        }
+           // var product = await _mediator.Send(new GetProductRequest { Id = id });
+           // return Ok(product);
+        }*/
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var product = await _context.Products.Where(a => a.Id == id).FirstOrDefaultAsync();
-            if (product == null) return NotFound();
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return Ok(product.Id);
+            var command = new DeleteProductCommand { Id = id };
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Domain.Entities.Product productData)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductDto product)
         {
-            var product = _context.Products.Where(a => a.Id == id).FirstOrDefault();
-            if (product == null) return NotFound();
-            else
-            {
-                product.Description = productData.Description;
-                product.Type = productData.Type;
-                await _context.SaveChangesAsync();
-                return Ok(product.Id);
-            }
+            var command = new UpdateProductCommand { Id = id, productDto = product };
+            await _mediator.Send(command);
+            return NoContent();
         }
 
 
