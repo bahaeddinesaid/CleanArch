@@ -13,25 +13,26 @@ namespace Application.Features.Products.Handlers.Commands
 {
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        //private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
 
-        public DeleteProductCommandHandler(
-            IProductRepository productRepository,
+        public DeleteProductCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.Get(request.Id);
+            var product = await _unitOfWork.ProductRepository.Get(request.Id);
 
             if (product == null)
                 throw new NotFoundException(nameof(product), request.Id);
 
-            await _productRepository.Delete(product);
+            await _unitOfWork.ProductRepository.Delete(product);
+            await _unitOfWork.Save();
 
             return Unit.Value;
         }

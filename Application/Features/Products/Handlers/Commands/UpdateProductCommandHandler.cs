@@ -15,31 +15,32 @@ namespace Application.Features.Products.Handlers.Commands
 {
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Unit>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
+      //  private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
         public UpdateProductCommandHandler(
-            IProductRepository productRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         public async Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var validator = new UpdateProductDtoValidator(_productRepository);
+            var validator = new UpdateProductDtoValidator(_unitOfWork.ProductRepository);
             var validationResult = await validator.ValidateAsync(request.productDto);
 
             if (validationResult.IsValid == false)
             throw new ValidationException(validationResult);
 
-            var product = await _productRepository.Get(request.Id);
+            var product = await _unitOfWork.ProductRepository.Get(request.Id);
 
             
                 _mapper.Map(request.productDto, product);
 
-                await _productRepository.Update(product);
-            
-            
+                await _unitOfWork.ProductRepository.Update(product);
+                await _unitOfWork.Save();
+
 
             return Unit.Value;
         }

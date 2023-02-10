@@ -20,7 +20,7 @@ namespace Application.DTOs.Product.Validators
             RuleFor(p => p.Description)
                            .NotEmpty().WithMessage("{PropertyName} is required.")
                            .NotNull()
-                           .MaximumLength(50).WithMessage("{PropertyName} must not exceed {ComparisonValue} characters.");
+                           .MaximumLength(10).WithMessage("{PropertyName} must not exceed {ComparisonValue} characters.");
         }
     }
 }

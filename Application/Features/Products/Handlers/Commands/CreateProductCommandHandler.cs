@@ -15,21 +15,22 @@ namespace Application.Features.Products.Handlers.Commands
 {
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, BaseCommandResponse>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        //private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
 
         public CreateProductCommandHandler(
-            IProductRepository productRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _productRepository = productRepository;
+            this._unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<BaseCommandResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseCommandResponse();
-            var validator = new CreateProductDtoValidator(_productRepository);
+            var validator = new CreateProductDtoValidator(_unitOfWork.ProductRepository );
            var validationResult = await validator.ValidateAsync(request.productDto);
 
             if (validationResult.IsValid == false)
@@ -38,14 +39,19 @@ namespace Application.Features.Products.Handlers.Commands
                 response.Message = "Creation Failed";
                 response.Errors = validationResult.Errors.Select(q => q.ErrorMessage).ToList();
             }
+            else
+            {
+                var product = _mapper.Map<Product>(request.productDto);
 
-            var product = _mapper.Map<Product>(request.productDto);
+                product = await _unitOfWork.ProductRepository.Add(product);
+                await _unitOfWork.Save();
 
-                product = await _productRepository.Add(product);
+                response.Success = true;
+                response.Message = "Product Creation Successful";
+                response.Id = product.Id;
+            }
 
-            response.Success = true;
-            response.Message = "Product Creation Successful";
-            response.Id = product.Id;
+           
             return response;
         }
     }

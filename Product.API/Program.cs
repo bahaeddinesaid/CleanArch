@@ -2,6 +2,7 @@ using Application.DependancyInjection;
 using Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
+using Product.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
