@@ -11,6 +11,7 @@ namespace Application.DTOs.Product.Validators
 {
     public class CreateProductDtoValidator : AbstractValidator<ProductDto>
     {
+        //inject other repo
         private readonly IProductRepository _productRepository;
 
         public CreateProductDtoValidator(IProductRepository productRepository)

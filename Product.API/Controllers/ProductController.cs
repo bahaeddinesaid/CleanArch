@@ -35,7 +35,7 @@ namespace Product.API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ProductDto>>> GetAll()
         {
-            var products = await _mediator.Send(new GetProductListRequest() { });
+            var products = await _mediator.Send(new GetProductListRequest() { });//autre methode injection dependance
             return Ok(products);
         }
 

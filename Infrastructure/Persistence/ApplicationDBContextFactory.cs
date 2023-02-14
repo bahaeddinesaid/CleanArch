@@ -37,7 +37,7 @@ namespace Infrastructure.Persistence
 
             return new ApplicationDBContext(builder.Options);*/
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDBContext>();
-            optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=master;");
+            optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=dbtecos;");
 
             return new ApplicationDBContext(optionsBuilder.Options);
         }
