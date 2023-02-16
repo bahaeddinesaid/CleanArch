@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Application.Logging;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,10 @@ namespace Application.DependancyInjection
     {
         public static IServiceCollection ConfigureApplicationServices(this IServiceCollection services)
         {
+
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddTransient(typeof(IPipelineBehavior<,>) ,typeof(LoggingBehaviour<,>));
 
             return services;
         }

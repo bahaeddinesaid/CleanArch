@@ -3,11 +3,14 @@ using Application.Features.Products.Requests.Commands;
 using Application.Features.Products.Requests.Queries;
 using Application.Interfaces;
 using Application.Responses;
+using Infrastructure.Configurations;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace Product.API.Controllers
 {
@@ -18,15 +21,21 @@ namespace Product.API.Controllers
         //private IApplicationDBContext _context;
 
         private readonly IMediator _mediator;
+        private ConfigurationOptions _configurationOptions;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IMediator mediator)
+        public ProductController(IMediator mediator, IOptions<ConfigurationOptions> settings, ILogger<ProductController> logger)
         {
             _mediator = mediator;
+            _configurationOptions = settings.Value;
+            _logger = logger;
+
         }
 
         [HttpPost]
         public async Task<ActionResult<BaseCommandResponse>> Create([FromBody] ProductDto product)
         {
+            //var command = this.cp.productDto = product; 
             var command = new CreateProductCommand { productDto = product };
             var repsonse = await _mediator.Send(command);
             return Ok(repsonse);
@@ -36,8 +45,18 @@ namespace Product.API.Controllers
         public async Task<ActionResult<List<ProductDto>>> GetAll()
         {
             var products = await _mediator.Send(new GetProductListRequest() { });//autre methode injection dependance
+            //Log.Information("controller result ");
+            _logger.LogInformation(" controller Executing {Action} ", nameof(GetAll));
+
             return Ok(products);
+            //return _configurationOptions;
         }
+
+        /*[HttpGet]
+        public async Task<ActionResult<ConfigurationOptions>> Getoptions()
+        {
+            return _configurationOptions;
+        }*/
 
         /*
         [HttpGet("{id}")]

@@ -5,11 +5,13 @@ using Application.Responses;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Application.Features.Products.Handlers.Commands
 {
@@ -38,6 +40,9 @@ namespace Application.Features.Products.Handlers.Commands
                 response.Success = false;
                 response.Message = "Creation Failed";
                 response.Errors = validationResult.Errors.Select(q => q.ErrorMessage).ToList();
+                Log.Error("End Response");
+                Log.Error($"End Response{response.Message}");
+
             }
             else
             {
@@ -49,9 +54,11 @@ namespace Application.Features.Products.Handlers.Commands
                 response.Success = true;
                 response.Message = "Product Creation Successful";
                 response.Id = product.Id;
+                Log.Information($"End Response{response}");
+
             }
 
-           
+
             return response;
         }
     }

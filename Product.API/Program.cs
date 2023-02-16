@@ -3,13 +3,47 @@ using Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Product.API.Middleware;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.ConfigureApplicationServices();
 builder.Services.ConfigurePersistenceServices(builder.Configuration);
-builder.Services.ConfigurePersistenceServices(builder.Configuration);
+
+//Initialize Logger
+Log.Logger = new LoggerConfiguration()
+.ReadFrom.Configuration(builder.Configuration)
+    // Add console (Sink) as logging target
+    /*.WriteTo.Console()
+// Write logs to a file for warning and logs with a higher severity
+// Logs are written in JSON
+.WriteTo.File(new JsonFormatter(),
+"important-logs.json",
+restrictedToMinimumLevel: LogEventLevel.Warning)
+
+// Add a log file that will be replaced by a new log file each day
+.WriteTo.File("all-daily-.logs",
+rollingInterval: RollingInterval.Day)
+
+    // Set default minimum log level
+    .MinimumLevel.Information()*/
+    .CreateLogger();
+builder.Logging.AddSerilog(Log.Logger);
+try
+{
+    Log.Information("Application Starting.");
+    //CreateHostBuilder(args).Build().Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "The Application failed to start.");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Configurations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,8 +12,14 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence
 {
-    internal class ApplicationDBContextFactory : IDesignTimeDbContextFactory<ApplicationDBContext>
+    public class ApplicationDBContextFactory : IDesignTimeDbContextFactory<ApplicationDBContext>
     {
+        private ConfigurationOptions _configurationOptions;
+        public ApplicationDBContextFactory(IOptions<ConfigurationOptions> options) 
+        {
+            _configurationOptions = options.Value;
+        }
+
         public ApplicationDBContext CreateDbContext(string[] args)
         {
             /* string pathToContentRoot = Directory.GetCurrentDirectory();
@@ -37,7 +45,10 @@ namespace Infrastructure.Persistence
 
             return new ApplicationDBContext(builder.Options);*/
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDBContext>();
-            optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=dbtecos;");
+            optionsBuilder.UseSqlServer(
+            //@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=dbtecos;"
+            _configurationOptions.ConnectionStrings.CleanArchDatabaseConnectionString
+            );
 
             return new ApplicationDBContext(optionsBuilder.Options);
         }

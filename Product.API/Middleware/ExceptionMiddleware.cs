@@ -1,5 +1,7 @@
 ﻿using Application.Exceptions;
 using Newtonsoft.Json;
+using Product.API.Controllers;
+using Serilog;
 using System.Net;
 
 namespace Product.API.Middleware
@@ -7,10 +9,12 @@ namespace Product.API.Middleware
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionMiddleware> _logger;
 
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
         public async Task InvokeAsync(HttpContext httpContext)
         {
@@ -48,7 +52,9 @@ namespace Product.API.Middleware
                 default:
                     break;
             }
-
+            
+            //Log.Information($"Exception result :{result}");
+            _logger.LogInformation(" Exception Executing {result} ", result);
             context.Response.StatusCode = (int)statusCode;
             return context.Response.WriteAsync(result);
         }
