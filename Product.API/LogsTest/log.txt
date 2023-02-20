@@ -28,3 +28,6 @@
 02/16/2023 17:32:49 +01:00 Application Starting.
 02/16/2023 17:38:59 +01:00 Application Starting.
 02/16/2023 17:42:45 +01:00 Application Starting.
+02/20/2023 09:02:45 +01:00 Begin Request Id:833576a3-2e9c-4ddb-9511-fcb43acd4d5a, request name:GetProductListRequest
+02/20/2023 09:02:48 +01:00 End Request Id:833576a3-2e9c-4ddb-9511-fcb43acd4d5a, request name:GetProductListRequest, total request time:3462
+02/20/2023 09:02:48 +01:00  controller Executing "GetAll" 

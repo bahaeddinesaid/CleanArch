@@ -12,7 +12,8 @@ builder.Services.ConfigureApplicationServices();
 builder.Services.ConfigurePersistenceServices(builder.Configuration);
 
 //Initialize Logger
-Log.Logger = new LoggerConfiguration()
+//Log.Logger = new LoggerConfiguration()
+var _logger = new LoggerConfiguration()
 .ReadFrom.Configuration(builder.Configuration)
     // Add console (Sink) as logging target
     /*.WriteTo.Console()
@@ -29,7 +30,9 @@ rollingInterval: RollingInterval.Day)
     // Set default minimum log level
     .MinimumLevel.Information()*/
     .CreateLogger();
-builder.Logging.AddSerilog(Log.Logger);
+//builder.Logging.AddSerilog(Log.Logger);
+builder.Logging.AddSerilog(_logger);
+
 try
 {
     Log.Information("Application Starting.");
